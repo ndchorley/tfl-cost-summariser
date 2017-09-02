@@ -10,7 +10,6 @@ class ToRecordTest {
 
         val record = toRecord(line)
 
-        assertEquals(LocalDate.of(2017, 8, 2), record.date)
-        assertEquals(3.20, record.cost, 1e-3)
+        assertEquals(Record(LocalDate.of(2017, 8, 2), 3.20), record)
     }
 }
