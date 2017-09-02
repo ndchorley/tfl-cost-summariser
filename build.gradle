@@ -45,3 +45,11 @@ jar {
 
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
+
+task createTar(type: Tar) {
+    dependsOn jar
+    from(jar.archivePath)
+    rename(jar.archiveName, 'tfl-cost-summariser.jar')
+    from('tfl-cost-summariser.sh')
+    into('tfl-cost-summariser')
+}
