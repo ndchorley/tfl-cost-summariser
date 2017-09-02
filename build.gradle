@@ -49,7 +49,7 @@ jar {
 task createTar(type: Tar) {
     dependsOn jar
     from(jar.archivePath)
-    rename(jar.archiveName, 'tfl-cost-summariser.jar')
-    from('tfl-cost-summariser.sh')
-    into('tfl-cost-summariser')
+    rename(jar.archiveName, rootProject.name + '.jar')
+    from(rootProject.name + '.sh')
+    into(rootProject.name)
 }
