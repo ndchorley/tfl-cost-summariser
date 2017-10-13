@@ -1,4 +1,4 @@
-#TfL cost summariser
+# TfL cost summariser
 
 A command line application written in Kotlin to produce the total amount spent from a CSV file provided by TfL for your
 contactless payment card.
