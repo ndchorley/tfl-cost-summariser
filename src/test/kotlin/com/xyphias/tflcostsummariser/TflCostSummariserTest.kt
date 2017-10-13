@@ -13,7 +13,7 @@ class TflCostSummariserTest {
             |04/08/2017,-3.40
             """.trimMargin())
 
-        summarise(fileName, OutputCaptor::write)
+        summarise(fileName, OutputCaptor::writeln)
 
         `the output should be`("""August 2017: 13.50
         |""".trimMargin())
@@ -40,7 +40,7 @@ class TflCostSummariserTest {
 object OutputCaptor {
     var written: String = ""
 
-    fun write(s: String) {
+    fun writeln(s: String) {
         written += "$s\n"
     }
 }
