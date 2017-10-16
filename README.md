@@ -5,7 +5,7 @@ contactless payment card.
 
 ## Building and running
 
-Gradle is used for dependency management and building. Running
+You will need at least Java 8. Gradle is used for dependency management and building. Running
 
 ```shell
 ./gradlew createTar
