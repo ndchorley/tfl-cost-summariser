@@ -2,6 +2,7 @@ package com.xyphias.tflcostsummariser
 
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 import java.io.File
 
@@ -17,6 +18,17 @@ class TflCostSummariserTest {
 
         `the output should be`("""August 2017: 13.50
         |""".trimMargin())
+    }
+
+    @Test fun `it should display an error if the file does not exist`() {
+        summarise("tfl-costs-January-1905.csv", OutputCaptor::writeln)
+
+        `the output should be`("""No such file: tfl-costs-January-1905.csv
+        |""".trimMargin())
+    }
+
+    @Before fun clearCaptor() {
+        OutputCaptor.written = ""
     }
 
     private fun `there is a file with`(contents: String) {

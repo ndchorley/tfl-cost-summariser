@@ -11,7 +11,14 @@ fun main(args: Array<String>) {
 data class Record(val date: LocalDate, val cost: Double)
 
 fun summarise(fileName: String, write: (String) -> Unit) {
-    val monthRecord = File(fileName)
+    val file = File(fileName)
+
+    if (!file.exists()) {
+        write("No such file: $fileName")
+        return
+    }
+
+    val monthRecord = file
             .readLines()
             .drop(1)
             .map(::toRecord)
