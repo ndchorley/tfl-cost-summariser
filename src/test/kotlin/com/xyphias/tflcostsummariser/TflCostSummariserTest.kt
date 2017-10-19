@@ -14,17 +14,37 @@ class TflCostSummariserTest {
             |04/08/2017,-3.40
             """.trimMargin())
 
-        summarise(fileName, OutputCaptor::writeln)
+        summarise(arrayOf(fileName), OutputCaptor::writeln)
 
         `the output should be`("""August 2017: 13.50
         |""".trimMargin())
     }
 
     @Test fun `it should display an error if the file does not exist`() {
-        summarise("tfl-costs-January-1905.csv", OutputCaptor::writeln)
+        summarise(arrayOf("tfl-costs-January-1905.csv"), OutputCaptor::writeln)
 
         `the output should be`("""No such file: tfl-costs-January-1905.csv
         |""".trimMargin())
+    }
+
+    @Test fun `it should produce the total for a month over several files`() {
+        `there are files with`("""Date,Daily Charge (GBP)
+            |02/08/2017,-3.20
+            |03/08/2017,-6.90
+            """.trimMargin(),
+
+            """Date,Daily Charge (GBP)
+            |04/08/2017,-5.60
+            """.trimMargin())
+
+        summarise(fileNames, OutputCaptor::writeln)
+
+        `the output should be`("""August 2017: 15.70
+        |""".trimMargin())
+    }
+
+   private fun `there are files with`(vararg contents: String) {
+        fileNames.zip(contents).forEach { (name, fileContents) -> File(name).writeText(fileContents) }
     }
 
     @Before fun clearCaptor() {
@@ -42,6 +62,7 @@ class TflCostSummariserTest {
 
     companion object {
         val fileName = createTempFile().absolutePath
+        val fileNames: Array<String> = arrayOf(createTempFile().absolutePath, createTempFile().absolutePath)
 
         @AfterClass @JvmStatic fun removeFile() {
             File(fileName).delete()
