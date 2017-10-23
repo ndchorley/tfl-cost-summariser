@@ -2,6 +2,7 @@ package com.xyphias.tflcostsummariser
 
 import com.natpryce.*
 import java.io.File
+import java.io.FileNotFoundException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -45,7 +46,7 @@ private fun summariseFile(fileName: String): Result<Record, String> {
 private fun readLines(fileName: String): Result<List<String>, String> {
     return try {
         Ok(File(fileName).readLines())
-    } catch (e: Exception) {
+    } catch (e: FileNotFoundException) {
         Err(fileName)
     }
 }
