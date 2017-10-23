@@ -35,16 +35,18 @@ private fun display(totalMonthRecord: Record, failures: List<String>, write: (St
 }
 
 private fun summariseFile(fileName: String): Result<Record, String> {
-    val lines = try {
-        Ok(File(fileName).readLines())
-    } catch (e: Exception) {
-        Err(fileName)
-    }
-
-    return lines.map {
+    return readLines(fileName).map {
         it.drop(1).map(::toRecord).reduce { acc: Record, record: Record ->
             Record(record.date, acc.cost + record.cost)
         }
+    }
+}
+
+private fun readLines(fileName: String): Result<List<String>, String> {
+    return try {
+        Ok(File(fileName).readLines())
+    } catch (e: Exception) {
+        Err(fileName)
     }
 }
 
