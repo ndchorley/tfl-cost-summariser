@@ -20,13 +20,6 @@ class TflCostSummariserTest {
         |""".trimMargin())
     }
 
-    @Test fun `it should display an error if the file does not exist`() {
-        summarise(arrayOf("tfl-costs-January-1905.csv"), OutputCaptor::writeln)
-
-        `the output should be`("""No such file: tfl-costs-January-1905.csv
-        |""".trimMargin())
-    }
-
     @Test fun `it should produce the total for a month over several files`() {
         `there is a file called`("tfl-August-2017-card1.csv") with("""Date,Daily Charge (GBP)
             |02/08/2017,-3.20
@@ -41,6 +34,21 @@ class TflCostSummariserTest {
 
         `the output should be`("""August 2017: 15.70
         |""".trimMargin())
+    }
+
+    @Test fun `it should also display an error about each file that does not exist`() {
+        `there is a file called`("tfl-September-2017.csv") with("""Date,Daily Charge (GBP)
+            |14/09/2017,-3.20
+            """.trimMargin())
+
+        summarise(arrayOf("tfl-costs-January-1905.csv", "tfl-September-2017.csv", "tfl-September-2017-VISA.csv"),
+                OutputCaptor::writeln)
+
+        `the output should be`("""September 2017: 3.20
+                                 |
+                                 |No such file: tfl-costs-January-1905.csv
+                                 |No such file: tfl-September-2017-VISA.csv
+                                 |""".trimMargin())
     }
 
     private fun `there is a file called`(name: String): File {

@@ -1,5 +1,6 @@
 package com.xyphias.tflcostsummariser
 
+import com.natpryce.*
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -11,31 +12,40 @@ fun main(args: Array<String>) {
 data class Record(val date: LocalDate, val cost: Double)
 
 fun summarise(fileNames: Array<String>, write: (String) -> Unit) {
-    val file = File(fileNames.first())
+    val (monthRecords, failures) = fileNames.map(::summariseFile).partition()
 
-    if (!file.exists()) {
-        write("No such file: ${fileNames.first()}")
-        return
+    val totalMonthRecord = monthRecords.reduce { acc: Record, record: Record ->
+        Record(acc.date, acc.cost + record.cost)
     }
 
-    val monthRecord = fileNames
-            .map(::summariseFile)
-            .reduce { acc: Record, record: Record -> Record(acc.date, acc.cost + record.cost) }
-
-    val formattedDate = monthRecord.date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
-    val formattedTotal = "%.2f".format(monthRecord.cost)
-
-    write("$formattedDate: $formattedTotal")
+    display(totalMonthRecord, failures, write)
 }
 
-private fun summariseFile(fileName: String): Record {
-    return File(fileName)
-            .readLines()
-            .drop(1)
-            .map(::toRecord)
-            .reduce { acc: Record, record: Record ->
-                Record(record.date, acc.cost + record.cost)
-            }
+private fun display(totalMonthRecord: Record, failures: List<String>, write: (String) -> Unit) {
+    val formattedDate = totalMonthRecord.date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
+    val formattedTotal = "%.2f".format(totalMonthRecord.cost)
+
+    write("$formattedDate: $formattedTotal")
+
+    if (failures.isNotEmpty()) {
+        write("")
+    }
+
+    failures.forEach { write("No such file: $it") }
+}
+
+private fun summariseFile(fileName: String): Result<Record, String> {
+    val lines = try {
+        Ok(File(fileName).readLines())
+    } catch (e: Exception) {
+        Err(fileName)
+    }
+
+    return lines.map {
+        it.drop(1).map(::toRecord).reduce { acc: Record, record: Record ->
+            Record(record.date, acc.cost + record.cost)
+        }
+    }
 }
 
 fun toRecord(line: String): Record {
