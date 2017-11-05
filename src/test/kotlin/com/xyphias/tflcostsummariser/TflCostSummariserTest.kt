@@ -51,6 +51,13 @@ class TflCostSummariserTest {
                                  |""".trimMargin())
     }
 
+    @Test fun `it should display an error if no files were supplied`() {
+        summarise(arrayOf(), OutputCaptor::writeln)
+
+        `the output should be`("""No files given
+            |""".trimMargin())
+    }
+
     private fun `there is a file called`(name: String): File {
         fileNames.add(name)
         return File(name)

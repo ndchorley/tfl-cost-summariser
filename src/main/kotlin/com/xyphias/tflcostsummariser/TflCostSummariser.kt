@@ -13,6 +13,11 @@ fun main(args: Array<String>) {
 data class Record(val date: LocalDate, val cost: Double)
 
 fun summarise(fileNames: Array<String>, write: (String) -> Unit) {
+    if (fileNames.isEmpty()) {
+        write("No files given")
+        return
+    }
+
     val (monthRecords, failures) = fileNames.map(::summariseFile).partition()
 
     val totalMonthRecord = monthRecords.reduce { acc: Record, record: Record ->
