@@ -58,6 +58,24 @@ class TflCostSummariserTest {
             |""".trimMargin())
     }
 
+    @Test fun `it should produce the total for each month`() {
+        `there is a file called`("tfl-September-2017.csv") with("""Date,Daily Charge (GBP)
+            |14/09/2017,-3.20
+            |15/09/2017,-6.90
+            """.trimMargin())
+
+        `there is a file called`("tfl-August-2017.csv") with("""Date,Daily Charge (GBP)
+            |04/08/2017,-5.60
+            |12/08/2017,-3.40
+            """.trimMargin())
+
+        summarise(arrayOf("tfl-September-2017.csv", "tfl-August-2017.csv"), OutputCaptor::writeln)
+
+        `the output should be`("""August 2017: 9.00
+            |September 2017: 10.10
+            |""".trimMargin())
+    }
+
     private fun `there is a file called`(name: String): File {
         fileNames.add(name)
         return File(name)

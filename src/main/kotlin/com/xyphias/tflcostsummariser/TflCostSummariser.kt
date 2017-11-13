@@ -4,13 +4,14 @@ import com.natpryce.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 fun main(args: Array<String>) {
     summarise(args, ::println)
 }
 
-data class Record(val date: LocalDate, val cost: Double)
+data class Record(val date: YearMonth, val cost: Double)
 
 fun summarise(fileNames: Array<String>, write: (String) -> Unit) {
     if (fileNames.isEmpty()) {
@@ -20,24 +21,29 @@ fun summarise(fileNames: Array<String>, write: (String) -> Unit) {
 
     val (monthRecords, failures) = fileNames.map(::summariseFile).partition()
 
-    val totalMonthRecord = monthRecords.reduce { acc: Record, record: Record ->
-        Record(acc.date, acc.cost + record.cost)
-    }
+    val totalMonthRecords = monthRecords
+            .groupBy { it.date }
+            .map { it.value.reduce { acc: Record, record: Record ->
+                        Record(acc.date, acc.cost + record.cost)
+                    }
+            }
+            .sortedBy { it.date }
 
-    display(totalMonthRecord, failures, write)
-}
-
-private fun display(totalMonthRecord: Record, failures: List<String>, write: (String) -> Unit) {
-    val formattedDate = totalMonthRecord.date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
-    val formattedTotal = "%.2f".format(totalMonthRecord.cost)
-
-    write("$formattedDate: $formattedTotal")
+    totalMonthRecords.forEach { display(it, write) }
 
     if (failures.isNotEmpty()) {
         write("")
     }
 
     failures.forEach { write("No such file: $it") }
+
+}
+
+private fun display(totalMonthRecord: Record, write: (String) -> Unit) {
+    val formattedDate = totalMonthRecord.date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
+    val formattedTotal = "%.2f".format(totalMonthRecord.cost)
+
+    write("$formattedDate: $formattedTotal")
 }
 
 private fun summariseFile(fileName: String): Result<Record, String> {
@@ -59,7 +65,7 @@ private fun readLines(fileName: String): Result<List<String>, String> {
 fun toRecord(line: String): Record {
     val fields = line.split(",")
 
-    val date = LocalDate.parse(fields[0], DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+    val date = YearMonth.parse(fields[0], DateTimeFormatter.ofPattern("dd/MM/yyyy"))
     val cost = fields[1].toDouble() * -1
 
     return Record(date, cost)
