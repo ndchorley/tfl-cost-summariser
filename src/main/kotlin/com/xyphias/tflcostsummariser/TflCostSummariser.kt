@@ -21,7 +21,7 @@ fun summarise(fileNames: Array<String>, write: (String) -> Unit) {
 
     val (monthRecords, failures) = fileNames.map(::summariseFile).partition()
 
-    val totalMonthRecords = monthRecords
+    val monthTotals = monthRecords
             .groupBy { it.date }
             .map { it.value.reduce { acc: Record, record: Record ->
                         Record(acc.date, acc.cost + record.cost)
@@ -29,7 +29,7 @@ fun summarise(fileNames: Array<String>, write: (String) -> Unit) {
             }
             .sortedBy { it.date }
 
-    totalMonthRecords.forEach { display(it, write) }
+    monthTotals.forEach { display(it, write) }
 
     if (failures.isNotEmpty()) {
         write("")
