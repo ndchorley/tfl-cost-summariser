@@ -1,9 +1,9 @@
 package com.xyphias.tflcostsummariser
 
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import java.io.File
 
 class TflCostSummariserTest {
@@ -87,11 +87,11 @@ class TflCostSummariserTest {
         assertEquals(expectedOutput, OutputCaptor.written)
     }
 
-    @Before fun clearCaptor() {
+    @BeforeEach fun clearCaptor() {
         OutputCaptor.written = ""
     }
 
-    @After fun removeFiles() {
+    @AfterEach fun removeFiles() {
         fileNames.forEach { File(it).delete() }
         fileNames.clear()
     }
