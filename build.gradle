@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile "com.natpryce:result4k:1.2.0"
+    compile "com.natpryce:result4k:1.4.1"
     testCompile "junit:junit:4.12"
 }
 
